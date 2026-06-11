@@ -62,12 +62,12 @@ nvd-scanner/
 │   │       ├── targets.module.ts
 │   │       ├── targets.service.ts
 │   │       ├── dto/
-│   │   │   ├── add-targets.dto.ts
-│   │   │   └── toggle-target.dto.ts
+│   │       ├── add-targets.dto.ts
+│   │       └── toggle-target.dto.ts
 │   │       ├── repositories/
-│   │   │   │   └── scan-target.repository.ts
+│   │       │   └── scan-target.repository.ts
 │   │       ├── services/
-│   │   │   │   └── target-resolver.service.ts
+│   │       │   └── target-resolver.service.ts
 │   │       └── types/
 │   │           └── entities/
 │   │               └── scan-target.entity.ts
