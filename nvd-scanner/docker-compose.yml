@@ -1,0 +1,60 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: nvd_scanner_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: scanner
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d scanner']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nvd_scanner_app
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      NODE_OPTIONS: "--dns-result-order=ipv4first"
+      PORT: 3000
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: scanner
+      DB_SYNC: 'true'
+      DAILY_JOBS_CRON: '0 20 * * *'
+      SCAN_WORKER_CONCURRENCY: 3
+      SCAN_WORKER_POLL_MS: 3000
+      SCAN_JOB_RETRY_ATTEMPTS: 2
+      SCAN_JOB_RETRY_DELAY_MS: 1200
+      NMAP_TIMEOUT_MS: 120000
+      CVE_WORKER_CONCURRENCY: 1
+      CVE_WORKER_POLL_MS: 5000
+      CVE_JOB_RETRY_ATTEMPTS: 2
+      CVE_JOB_RETRY_DELAY_MS: 2000
+      NVD_REQUEST_TIMEOUT_MS: 20000
+      NVD_REQUEST_DELAY_MS: 700
+      NVD_API_KEY: ${NVD_API_KEY:-}
+    ports:
+      - '3000:3000'
+    healthcheck:
+      test: ['CMD-SHELL', 'wget -qO- http://localhost:3000/api/scan/state >/dev/null 2>&1 || exit 1']
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+volumes:
+  postgres_data:
