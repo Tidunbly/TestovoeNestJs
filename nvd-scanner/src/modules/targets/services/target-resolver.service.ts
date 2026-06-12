@@ -13,25 +13,11 @@ export class TargetResolverService {
       return null;
     }
 
-    const ipType = isIP(trimmed);
-    if (ipType === 4) {
-      const available = await this.pingIpv4(trimmed);
-      return available ? trimmed : null;
+    if (isIP(trimmed) === 4) {
+      return trimmed;
     }
 
     return this.resolveDomainWithNslookup(trimmed);
-  }
-
-  private async pingIpv4(ip: string): Promise<boolean> {
-    const args =
-      process.platform === 'win32' ? ['-n', '1', ip] : ['-c', '1', ip];
-
-    try {
-      await execFileAsync('ping', args);
-      return true;
-    } catch {
-      return false;
-    }
   }
 
   private async resolveDomainWithNslookup(
