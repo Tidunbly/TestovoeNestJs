@@ -35,15 +35,69 @@ export class CveRepository {
       .execute();
   }
 
+  async findBestCandidatesForVersions(
+    versionLabels: string[],
+  ): Promise<Map<string, CveEntity | null>> {
+    const versionTokens: Array<{ version: string; tokens: string[] }> =
+      versionLabels.map((label) => ({
+        version: label,
+        tokens: this.normalizeAndTokenize(label),
+      }));
+
+    const allTokens = [
+      ...new Set(versionTokens.flatMap((v) => v.tokens)),
+    ];
+    if (!allTokens.length) {
+      return new Map(versionLabels.map((v) => [v, null]));
+    }
+
+    const candidates = await this.repository
+      .createQueryBuilder('cve')
+      .where(
+        allTokens
+          .map((_, idx) => `cve.description ILIKE :token${idx}`)
+          .join(' OR '),
+        Object.fromEntries(
+          allTokens.map((token, idx) => [`token${idx}`, `%${token}%`]),
+        ),
+      )
+      .orderBy('cve.publishedAt', 'DESC')
+      .limit(200)
+      .getMany();
+
+    const result = new Map<string, CveEntity | null>();
+    for (const { version, tokens } of versionTokens) {
+      let best: { row: CveEntity; matches: number } | null = null;
+      for (const row of candidates) {
+        const text = row.description.toLowerCase();
+        const matches = tokens.reduce(
+          (count, token) => (text.includes(token) ? count + 1 : count),
+          0,
+        );
+        if (matches < 3) {
+          continue;
+        }
+        if (!best || matches > best.matches) {
+          best = { row, matches };
+        }
+      }
+      result.set(version, best?.row ?? null);
+    }
+
+    return result;
+  }
+
+  private normalizeAndTokenize(label: string): string[] {
+    const normalized = label.toLowerCase().replace(/[^a-z0-9.\- ]/g, ' ');
+    return [
+      ...new Set(normalized.split(/\s+/).filter((token) => token.length >= 2)),
+    ];
+  }
+
   async findBestCandidateByVersionLabel(
     versionLabel: string,
   ): Promise<CveEntity | null> {
-    const normalized = versionLabel
-      .toLowerCase()
-      .replace(/[^a-z0-9.\- ]/g, ' ');
-    const tokens = [
-      ...new Set(normalized.split(/\s+/).filter((token) => token.length >= 2)),
-    ];
+    const tokens = this.normalizeAndTokenize(versionLabel);
     if (!tokens.length) {
       return null;
     }

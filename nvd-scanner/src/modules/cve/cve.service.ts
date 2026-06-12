@@ -130,6 +130,10 @@ export class CveService implements OnModuleInit {
     return this.cveRepository.findBestCandidateByVersionLabel(versionLabel);
   }
 
+  async findBestCandidatesForVersions(versionLabels: string[]) {
+    return this.cveRepository.findBestCandidatesForVersions(versionLabels);
+  }
+
   async getCvesByIds(ids: number[]) {
     return this.cveRepository.findByIds(ids);
   }

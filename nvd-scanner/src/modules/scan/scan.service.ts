@@ -33,6 +33,11 @@ export class ScanService {
       return 0;
     }
 
+    const uniqueVersions = [...new Set(parsedPorts.map((p) => p.version))];
+    const versionToCve = await this.cveService.findBestCandidatesForVersions(
+      uniqueVersions,
+    );
+
     const snapshotRows: Array<{
       portId: number;
       versionId: number;
@@ -43,9 +48,7 @@ export class ScanService {
       const version = await this.scanRepository.getOrCreateVersion(
         item.version,
       );
-      const matchedCve = await this.cveService.findBestCandidateForVersion(
-        item.version,
-      );
+      const matchedCve = versionToCve.get(item.version) ?? null;
       snapshotRows.push({
         portId: port.id,
         versionId: version.id,
