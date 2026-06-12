@@ -35,4 +35,7 @@ docker-compose up --build
 - `app` (NestJS, порт `3000`)
 - `postgres` (PostgreSQL 16, порт `5432`)
 
+## Swagger
+Документация доступна по пути: http://localhost:3000/api/docs#/
+
 
