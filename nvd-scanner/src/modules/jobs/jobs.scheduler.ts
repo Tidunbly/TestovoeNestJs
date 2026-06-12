@@ -48,8 +48,9 @@ export class JobsScheduler implements OnModuleInit, OnModuleDestroy {
   onModuleDestroy(): void {
     try {
       this.schedulerRegistry.deleteCronJob(JobsScheduler.CRON_NAME);
-    } catch {
-      /* not registered */
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      this.logger.debug(`Failed to delete cron job "${JobsScheduler.CRON_NAME}": ${message}`);
     }
   }
 

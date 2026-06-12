@@ -21,7 +21,7 @@
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
     "baseUrl": "./",
-    "types": ["jest"],  // <-- Добавьте эту строку
+    "types": ["jest"], 
     "paths": {
       "@common/*": ["src/common/*"],
       "@modules/*": ["src/modules/*"]
