@@ -7,11 +7,13 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
   Column,
+  Index,
 } from 'typeorm';
 import { PortEntity } from '../../../scan/types/entities/port.entity';
 import { ServiceVersionEntity } from '../../../scan/types/entities/service-version.entity';
 
 @Entity({ name: 'port_snapshots' })
+@Index(['ipId', 'createdAt'])
 export class PortSnapshotEntity {
   @PrimaryGeneratedColumn()
   id!: number;

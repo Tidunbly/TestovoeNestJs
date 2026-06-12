@@ -46,6 +46,21 @@ export class ScanTargetRepository {
     return this.repository.save(item);
   }
 
+  async findAll(order?: 'ASC' | 'DESC'): Promise<ScanTargetEntity[]> {
+    return this.repository.find({
+      order: { createdAt: order ?? 'DESC' },
+    });
+  }
+
+  async clearAll(): Promise<number> {
+    const result = await this.repository
+      .createQueryBuilder()
+      .delete()
+      .from(ScanTargetEntity)
+      .execute();
+    return result.affected ?? 0;
+  }
+
   async findEnabledTargets(): Promise<ScanTargetEntity[]> {
     return this.repository.find({
       where: { isEnabled: true },

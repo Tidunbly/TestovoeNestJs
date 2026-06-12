@@ -76,27 +76,46 @@ export class ScanRepository {
     const from = dto.from ? new Date(dto.from) : undefined;
     const to = dto.to ? new Date(dto.to) : undefined;
 
-    const baseLatestByIpQuery = this.snapshotRepository
+    interface WhereParams {
+      ipIds?: number[];
+      from?: Date;
+      to?: Date;
+    }
+
+    function applyFilters(
+      qb: any,
+      params: WhereParams,
+    ) {
+      if (params.ipIds?.length) {
+        qb.andWhere('snapshot.ipId IN (:...ipIds)', { ipIds: params.ipIds });
+      }
+      if (params.from) {
+        qb.andWhere('snapshot.createdAt >= :from', { from: params.from });
+      }
+      if (params.to) {
+        qb.andWhere('snapshot.createdAt <= :to', { to: params.to });
+      }
+      return qb;
+    }
+
+    const baseQuery = this.snapshotRepository
       .createQueryBuilder('snapshot')
       .select('snapshot.ipId', 'ipId')
       .addSelect('MAX(snapshot.createdAt)', 'lastCreatedAt')
-      .where('1=1')
-      .andWhere(ipIds?.length ? 'snapshot.ipId IN (:...ipIds)' : '1=1', { ipIds })
-      .andWhere(from ? 'snapshot.createdAt >= :from' : '1=1', { from })
-      .andWhere(to ? 'snapshot.createdAt <= :to' : '1=1', { to })
       .groupBy('snapshot.ipId');
 
-    const totalIpsRaw = await this.snapshotRepository
+    applyFilters(baseQuery, { ipIds, from, to });
+
+    const totalQuery = this.snapshotRepository
       .createQueryBuilder('snapshot')
-      .select('COUNT(DISTINCT snapshot.ipId)', 'count')
-      .where('1=1')
-      .andWhere(ipIds?.length ? 'snapshot.ipId IN (:...ipIds)' : '1=1', { ipIds })
-      .andWhere(from ? 'snapshot.createdAt >= :from' : '1=1', { from })
-      .andWhere(to ? 'snapshot.createdAt <= :to' : '1=1', { to })
-      .getRawOne<{ count: string }>();
+      .select('COUNT(DISTINCT snapshot.ipId)', 'count');
+
+    applyFilters(totalQuery, { ipIds, from, to });
+
+    const totalIpsRaw = await totalQuery.getRawOne<{ count: string }>();
     const totalIps = Number(totalIpsRaw?.count ?? 0);
 
-    const latestByIpRaw = await baseLatestByIpQuery
+    const latestByIpRaw = await baseQuery
       .orderBy('MAX(snapshot.createdAt)', 'DESC')
       .offset(offset)
       .limit(limit)
@@ -106,26 +125,21 @@ export class ScanRepository {
       return { page, limit, totalIps, ips: [] };
     }
 
-    const latestPairs = latestByIpRaw.map((item) => ({
-      ipId: Number(item.ipId),
-      lastCreatedAt: new Date(item.lastCreatedAt),
-    }));
+    const selectedIpIds = latestByIpRaw.map((item) => Number(item.ipId));
 
-    const selectedIpIds = latestPairs.map((item) => item.ipId);
     const snapshots = await this.snapshotRepository
       .createQueryBuilder('snapshot')
       .leftJoinAndSelect('snapshot.port', 'port')
       .leftJoinAndSelect('snapshot.version', 'version')
       .where('snapshot.ipId IN (:...ipIds)', { ipIds: selectedIpIds })
       .andWhere(
-        `snapshot.createdAt = (
-          SELECT MAX(s2."createdAt")
+        `(snapshot.ipId, snapshot.createdAt) IN (
+          SELECT s2."ipId", MAX(s2."createdAt")
           FROM port_snapshots s2
-          WHERE s2."ipId" = snapshot."ipId"
-          ${from ? 'AND s2."createdAt" >= :from' : ''}
-          ${to ? 'AND s2."createdAt" <= :to' : ''}
+          WHERE s2."ipId" = ANY(:latestIpIds)
+          GROUP BY s2."ipId"
         )`,
-        { from, to },
+        { latestIpIds: selectedIpIds },
       )
       .getMany();
 
@@ -151,15 +165,7 @@ export class ScanRepository {
         });
       }
 
-      const bucket = grouped.get(row.ipId) as {
-        ipId: number;
-        createdAt: Date;
-        ports: Array<{
-          port: number;
-          version: string;
-          cveId: number | null;
-        }>;
-      };
+      const bucket = grouped.get(row.ipId)!;
       bucket.ports.push({
         port: row.port.port,
         version: row.version.name,

@@ -35,3 +35,4 @@ coverage/
 .tsbuildinfo
 nvd-scanner/eslint.config.mjs
 nvd-scanner/nest-cli.json
+.opencode

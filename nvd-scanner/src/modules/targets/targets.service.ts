@@ -138,5 +138,14 @@ export class TargetsService {
   async getTargetsByIps(ips: string[]) {
     return this.scanTargetRepository.findByIps(ips);
   }
+
+  async getAll(): Promise<ScanTargetEntity[]> {
+    return this.scanTargetRepository.findAll();
+  }
+
+  async clearAll(): Promise<{ deleted: number }> {
+    const deleted = await this.scanTargetRepository.clearAll();
+    return { deleted };
+  }
 }
 
