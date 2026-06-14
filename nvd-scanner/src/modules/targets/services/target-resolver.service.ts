@@ -38,7 +38,6 @@ export class TargetResolverService {
     const nameLineIndex = lines.findIndex((line) => /^name\s*:/i.test(line));
     const ipv4Regex = /\b(\d{1,3}(?:\.\d{1,3}){3})\b/g;
 
-    // Preferred: parse answer section after "Name:"
     if (nameLineIndex !== -1) {
       for (let i = nameLineIndex + 1; i < lines.length; i += 1) {
         const line = lines[i];
@@ -64,7 +63,6 @@ export class TargetResolverService {
       }
     }
 
-    // Fallback: take the last IPv4 found in output (usually DNS server comes first, target later).
     const allMatches = output.match(ipv4Regex) ?? [];
     for (let i = allMatches.length - 1; i >= 0; i -= 1) {
       const candidate = allMatches[i];

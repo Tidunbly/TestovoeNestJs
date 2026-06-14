@@ -4,7 +4,6 @@ import { ScanTargetRepository } from './repositories/scan-target.repository';
 import { TargetResolverService } from './services/target-resolver.service';
 import { NotFoundException } from '@nestjs/common';
 
-// Simple in‑memory mock implementations
 const mockScanTargetRepository = {
   findByIps: jest.fn(),
   findByIp: jest.fn(),

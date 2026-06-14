@@ -4,7 +4,6 @@ import { CveRepository } from './repositories/cve.repository';
 import { ConfigService } from '@nestjs/config';
 import { DataSource } from 'typeorm';
 
-// Helper to create a mock fetch response
 function mockFetch(status: number, json: any) {
   return jest.fn().mockResolvedValue({
     ok: status >= 200 && status < 300,
@@ -54,7 +53,6 @@ describe('CveService', () => {
   });
 
   it('should map NVD CVE to internal shape', () => {
-    // @ts-ignore – mapCve is private, access via any
     const result = (service as any).mapCve({
       id: 'CVE-2023-1234',
       published: '2023-01-01T00:00Z',
@@ -73,9 +71,7 @@ describe('CveService', () => {
   });
 
   it('should sync latest CVEs with pagination and upsert', async () => {
-    // Simulate last published date null (full sync)
     mockCveRepository.getLastPublishedAt.mockResolvedValue(null);
-    // First page returns two items and totalResults 2
     const firstPage = {
       vulnerabilities: [
         { cve: { id: 'CVE-1', published: '2023-01-01T00:00Z', descriptions: [{ lang: 'en', value: 'Desc1' }], metrics: {} } },
@@ -85,7 +81,6 @@ describe('CveService', () => {
       resultsPerPage: 2,
       startIndex: 0,
     };
-    // Second fetch will return empty list, breaking loop
     const emptyPage = { vulnerabilities: [], totalResults: 2, resultsPerPage: 2, startIndex: 2 };
     (global.fetch as jest.Mock)
       .mockImplementationOnce(mockFetch(200, firstPage))

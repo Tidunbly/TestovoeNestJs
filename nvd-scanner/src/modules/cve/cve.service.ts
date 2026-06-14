@@ -76,8 +76,8 @@ export class CveService implements OnModuleInit {
       url.searchParams.set('startIndex', String(startIndex));
       url.searchParams.set('resultsPerPage', String(perPage));
       if (useDateFilter && lastPublishedAt) {
-        url.searchParams.set('pubStartDate', lastPublishedAt.toISOString());
-        url.searchParams.set('pubEndDate', new Date().toISOString());
+        url.searchParams.set('pubStartDate', this.toNvdDate(lastPublishedAt));
+        url.searchParams.set('pubEndDate', this.toNvdDate(new Date()));
       }
 
       const response = await this.fetchWithRetry(url, apiKey);
@@ -277,6 +277,10 @@ export class CveService implements OnModuleInit {
     const capped = Math.min(exponential, this.fetchRetryMaxDelayMs);
     const jitter = Math.floor(capped * 0.2 * Math.random());
     return capped + jitter;
+  }
+
+  private toNvdDate(date: Date): string {
+    return date.toISOString().replace('Z', '');
   }
 
   private async sleep(ms: number): Promise<void> {

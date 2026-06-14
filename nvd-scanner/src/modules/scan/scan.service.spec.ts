@@ -5,10 +5,8 @@ import { CveService } from '../cve/cve.service';
 import { TargetsService } from '../targets/targets.service';
 import { ConfigService } from '@nestjs/config';
 
-// Mock execFile to avoid real nmap call
 jest.mock('node:child_process', () => ({
   execFile: jest.fn((_cmd, _args, _opts, callback) => {
-    // Simulate successful nmap output with two open ports
     const stdout = `Host: 1.2.3.4 (example.com)\tPorts: 80/open/tcp//http//Apache httpd 2.4.41/, 443/open/tcp//ssl//OpenSSL 1.1.1/\n`;
     callback(null, { stdout, stderr: '' });
   }),
@@ -62,7 +60,6 @@ describe('ScanService', () => {
   it('should parse nmap output and create snapshots', async () => {
     const count = await service.scanIp('1.2.3.4', 123);
     expect(count).toBe(2);
-    // Two ports should have been processed
     expect(mockScanRepository.getOrCreatePort).toHaveBeenCalledTimes(2);
     expect(mockScanRepository.getOrCreateVersion).toHaveBeenCalledTimes(2);
     expect(mockCveService.findBestCandidateForVersion).toHaveBeenCalledTimes(2);
