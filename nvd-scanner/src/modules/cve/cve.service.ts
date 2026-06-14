@@ -53,13 +53,20 @@ export class CveService implements OnModuleInit {
   async onModuleInit(): Promise<void> {
     try {
       await this.dataSource.query('CREATE EXTENSION IF NOT EXISTS pg_trgm');
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : 'Unknown pg_trgm init error';
+      this.logger.warn(`pg_trgm extension skipped: ${message}`);
+    }
+
+    try {
       await this.dataSource.query(
         'CREATE INDEX IF NOT EXISTS idx_cves_description_trgm ON cves USING GIN (description gin_trgm_ops)',
       );
     } catch (error) {
       const message =
-        error instanceof Error ? error.message : 'Unknown pg_trgm init error';
-      this.logger.warn(`pg_trgm initialization skipped: ${message}`);
+        error instanceof Error ? error.message : 'Unknown index init error';
+      this.logger.warn(`pg_trgm index skipped (benign if already exists): ${message}`);
     }
   }
 

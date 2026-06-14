@@ -1,7 +1,7 @@
 FROM node:22-alpine AS deps
 WORKDIR /app
 COPY package*.json ./
-RUN npm ci
+RUN npm install
 
 FROM node:22-alpine AS build
 WORKDIR /app
@@ -12,7 +12,7 @@ RUN npm run build
 FROM node:22-alpine AS runtime
 WORKDIR /app
 
-RUN apk add --no-cache nmap nmap-scripts wget
+RUN apk add --no-cache nmap nmap-scripts wget bind-tools
 
 ENV NMAPDIR=/usr/share/nmap
 
