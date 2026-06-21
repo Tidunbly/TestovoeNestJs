@@ -36,4 +36,5 @@ coverage/
 nvd-scanner/eslint.config.mjs
 nvd-scanner/nest-cli.json
 .opencode
+.mimocode
 nvd-scanner/.prettierrc

@@ -39,3 +39,13 @@ docker-compose up --build
 Документация доступна по пути: http://localhost:3000/api/docs#/
 
 
+
+## Tests
+Запуск тестов:
+```bash
+npm test
+```
+
+
+## Demonstration
+Папка со скриншотами работы программы: (./screenshots)
