@@ -12,6 +12,8 @@ import { PortEntity } from './modules/scan/types/entities/port.entity';
 import { ServiceVersionEntity } from './modules/scan/types/entities/service-version.entity';
 import { PortSnapshotEntity } from './modules/scan/types/entities/port-snapshot.entity';
 import { CveEntity } from './modules/cve/types/entities/cve.entity';
+import { NotificationsModule } from './modules/notifications/notifications.module';
+import { NotificationEntity } from './modules/notifications/types/entities/notification.entity';
 import { Client } from 'pg';
 import { AppController } from './app.controller';
 
@@ -73,6 +75,7 @@ async function ensureDatabaseExists(
             ServiceVersionEntity,
             PortSnapshotEntity,
             CveEntity,
+            NotificationEntity,
           ],
           synchronize: configService.get<string>('DB_SYNC', 'true') === 'true',
         };
@@ -82,6 +85,7 @@ async function ensureDatabaseExists(
     TargetsModule,
     ScanModule,
     JobsModule,
+    NotificationsModule,
   ],
   controllers: [AppController],
 })

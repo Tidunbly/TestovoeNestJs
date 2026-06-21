@@ -6,6 +6,7 @@ import { CveService } from '@modules/cve/cve.service';
 import { GetCurrentStateDto } from '@modules/scan/dto/get-current-state.dto';
 import { ConfigService } from '@nestjs/config';
 import { TargetsService } from '@modules/targets/targets.service';
+import { NotificationsService } from '@modules/notifications/notifications.service';
 
 const execFileAsync = promisify(execFile);
 
@@ -22,6 +23,7 @@ export class ScanService {
     private readonly scanRepository: ScanRepository,
     private readonly cveService: CveService,
     private readonly targetsService: TargetsService,
+    private readonly notificationsService: NotificationsService,
     private readonly configService: ConfigService,
   ) {
     this.nmapTimeoutMs = this.getNumberEnv('NMAP_TIMEOUT_MS', 45000);
@@ -57,6 +59,24 @@ export class ScanService {
     }
 
     await this.scanRepository.saveSnapshots(ipId, snapshotRows);
+
+    const notifiedCves = new Set<string>();
+    for (const item of parsedPorts) {
+      const matchedCve = versionToCve.get(item.version);
+      if (!matchedCve || notifiedCves.has(matchedCve.cveId)) {
+        continue;
+      }
+      notifiedCves.add(matchedCve.cveId);
+      this.notificationsService.notifyCriticalCve({
+        cveId: matchedCve.cveId,
+        cvssV3: matchedCve.cvssV3,
+        hostIp: ip,
+        port: item.port,
+        version: item.version,
+        description: matchedCve.description,
+      }).catch(() => {});
+    }
+
     return snapshotRows.length;
   }
 

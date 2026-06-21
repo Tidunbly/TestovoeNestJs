@@ -8,12 +8,14 @@ import { ScanService } from '@modules/scan/scan.service';
 import { CveModule } from '@modules/cve/cve.module';
 import { ScanController } from '@modules/scan/scan.controller';
 import { TargetsModule } from '@modules/targets/targets.module';
+import { NotificationsModule } from '@modules/notifications/notifications.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([PortEntity, ServiceVersionEntity, PortSnapshotEntity]),
     CveModule,
     TargetsModule,
+    NotificationsModule,
   ],
   providers: [ScanRepository, ScanService],
   controllers: [ScanController],

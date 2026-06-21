@@ -12,6 +12,7 @@ type NvdResponse = {
       metrics?: {
         cvssMetricV31?: Array<{ cvssData?: { baseScore?: number } }>;
         cvssMetricV30?: Array<{ cvssData?: { baseScore?: number } }>;
+        cvssMetricV2?: Array<{ cvssData?: { baseScore?: number } }>;
       };
     };
   }>;
@@ -162,6 +163,7 @@ export class CveService implements OnModuleInit {
     const cvss =
       cve.metrics?.cvssMetricV31?.[0]?.cvssData?.baseScore ??
       cve.metrics?.cvssMetricV30?.[0]?.cvssData?.baseScore ??
+      cve.metrics?.cvssMetricV2?.[0]?.cvssData?.baseScore ??
       null;
 
     return {

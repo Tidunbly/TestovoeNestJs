@@ -31,7 +31,7 @@ export class CveRepository {
       .insert()
       .into(CveEntity)
       .values(rows)
-      .orIgnore()
+      .orUpdate(['cvssV3', 'description', 'publishedAt'], ['cveId'])
       .execute();
   }
 
