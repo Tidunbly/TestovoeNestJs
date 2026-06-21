@@ -23,6 +23,10 @@ services:
       dockerfile: Dockerfile
     container_name: nvd_scanner_app
     restart: unless-stopped
+    env_file: .env
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
     depends_on:
       postgres:
         condition: service_healthy
@@ -48,6 +52,13 @@ services:
       NVD_REQUEST_TIMEOUT_MS: ${NVD_REQUEST_TIMEOUT_MS:-20000}
       NVD_REQUEST_DELAY_MS: ${NVD_REQUEST_DELAY_MS:-700}
       NVD_API_KEY: ${NVD_API_KEY:-}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      SMTP_TO_EMAIL: ${SMTP_TO_EMAIL:-}
+      SMTP_FROM_EMAIL: ${SMTP_FROM_EMAIL:-}
+      CVE_NOTIFY_THRESHOLD: ${CVE_NOTIFY_THRESHOLD:-7}
     ports:
       - '3000:3000'
     healthcheck:
@@ -55,6 +66,13 @@ services:
       interval: 10s
       timeout: 5s
       retries: 12
+
+  dvwa:
+    image: vulnerables/web-dvwa
+    container_name: nvd_scanner_dvwa
+    restart: unless-stopped
+    ports:
+      - '4280:80'
 
 volumes:
   postgres_data:
