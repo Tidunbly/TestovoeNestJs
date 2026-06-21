@@ -84,7 +84,7 @@ describe('TargetsService', () => {
     mockScanTargetRepository.save = jest.fn().mockResolvedValue(undefined);
     const res = await service.toggle(dto);
     expect(res).toEqual({ ip: '1.1.1.1', enabled: true });
-     (target.isEnabled).toBe(true);
+      expect(target.isEnabled).toBe(true);
   });
 
   it('should throw NotFoundException when toggle resource is not resolvable', async () => {

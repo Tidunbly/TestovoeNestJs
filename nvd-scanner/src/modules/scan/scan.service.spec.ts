@@ -4,6 +4,7 @@ import { ScanRepository } from './repositories/scan.repository';
 import { CveService } from '../cve/cve.service';
 import { TargetsService } from '../targets/targets.service';
 import { ConfigService } from '@nestjs/config';
+import { NotificationsService } from '../notifications/notifications.service';
 
 jest.mock('node:child_process', () => ({
   execFile: jest.fn((_cmd, _args, _opts, callback) => {
@@ -23,7 +24,7 @@ const mockScanRepository = {
 };
 
 const mockCveService = {
-  findBestCandidateForVersion: jest.fn().mockResolvedValue(null),
+  findBestCandidatesForVersions: jest.fn().mockResolvedValue(new Map()),
 };
 
 const mockTargetsService = {
@@ -39,6 +40,10 @@ const mockConfigService = {
   }),
 } as any;
 
+const mockNotificationsService = {
+  notifyCriticalCve: jest.fn().mockResolvedValue(undefined),
+};
+
 describe('ScanService', () => {
   let service: ScanService;
 
@@ -49,6 +54,7 @@ describe('ScanService', () => {
         { provide: ScanRepository, useValue: mockScanRepository },
         { provide: CveService, useValue: mockCveService },
         { provide: TargetsService, useValue: mockTargetsService },
+        { provide: NotificationsService, useValue: mockNotificationsService },
         { provide: ConfigService, useValue: mockConfigService },
       ],
     }).compile();
@@ -62,7 +68,7 @@ describe('ScanService', () => {
     expect(count).toBe(2);
     expect(mockScanRepository.getOrCreatePort).toHaveBeenCalledTimes(2);
     expect(mockScanRepository.getOrCreateVersion).toHaveBeenCalledTimes(2);
-    expect(mockCveService.findBestCandidateForVersion).toHaveBeenCalledTimes(2);
+    expect(mockCveService.findBestCandidatesForVersions).toHaveBeenCalledTimes(1);
     expect(mockScanRepository.saveSnapshots).toHaveBeenCalledWith(123, expect.any(Array));
     const savedRows = (mockScanRepository.saveSnapshots as jest.Mock).mock.calls[0][1];
     expect(savedRows).toHaveLength(2);
