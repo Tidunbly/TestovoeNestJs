@@ -7,14 +7,16 @@
 
 >📁[Открыть папку со всеми скриншотами](./screenshots)
 
-| Добавление целей | ![Добавление целей](./screenshots/post_api_targets.png) |
-| Получение списка целей | ![Список целей](./screenshots/get_api_targets.png) |
-| Удаление целей | ![Удаление целей](./screenshots/delete_api_targets.png) |
-| Переключение статуса цели | ![Переключение статуса](./screenshots/patch_api_targets_toggle.png) |
-| Состояние сканирования | ![Состояние сканирования](./screenshots/get_api_scan_state.png) |
-| CVE Alert | ![Уведомление о найденном CVE](./screenshots/scanner_cve_alert.png) |
-| Startup Notification | ![Уведомление о старте](./screenshots/scanner_startup_notification.png) |
-| Swagger UI | ![Swagger документация](./screenshots/swagger.png) |
+| Экран | Скриншот |
+| :--- | :---: |
+| **POST** — Добавление целей | ![Добавление целей](./screenshots/post_api_targets.png) |
+| **GET** — Список целей | ![Получение списка целей](./screenshots/get_api_targets.png) |
+| **DELETE** — Удаление целей | ![Удаление целей](./screenshots/delete_api_targets.png) |
+| **PATCH** — Переключение статуса | ![Переключение статуса](./screenshots/patch_api_targets_toggle.png) |
+| **GET** — Состояние сканирования | ![Состояние сканирования](./screenshots/get_api_scan_state.png) |
+| **CVE Alert** — Уведомление об уязвимости | ![CVE Alert](./screenshots/scanner_cve_alert.png) |
+| **Startup** — Уведомление о запуске | ![Startup Notification](./screenshots/scanner_startup_notification.png) |
+| **Swagger** — API документация | ![Swagger UI](./screenshots/swagger.png) |
 
 ## Technology Stack
 | Компонeнт           | Технология                              |
