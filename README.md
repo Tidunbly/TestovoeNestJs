@@ -6,6 +6,23 @@
 ## Demonstration
 [📁 Папка со скриншотами работы программы](./screenshots)
 
+[Добавление целей](./screenshots/post_api_targets.png)
+
+[Получение списка целей](./screenshots/get_api_targets.png)
+
+[Удаление целей](./screenshots/delete_api_targets.png)
+
+[Переключение статуса цели](./screenshots/patch_api_targets_toggle.png)
+
+[Получение состояния сканирования](./screenshots/get_api_scan_state.png)
+
+[Уведомление о найдетом CVE](./screenshots/scanner_cve_alert.png)
+
+[Уведомление о старте программы](./screenshots/scanner_startup_notification.png)
+
+[Swagger](./screenshots/swagger.png)
+
+
 
 ## Technology Stack
 | Компонeнт           | Технология                              |
