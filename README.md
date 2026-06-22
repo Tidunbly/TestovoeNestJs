@@ -4,25 +4,17 @@
 
 
 ## Demonstration
-[📁 Папка со скриншотами работы программы](./screenshots)
 
-[Добавление целей](./screenshots/post_api_targets.png)
+>📁[Открыть папку со всеми скриншотами](./screenshots)
 
-[Получение списка целей](./screenshots/get_api_targets.png)
-
-[Удаление целей](./screenshots/delete_api_targets.png)
-
-[Переключение статуса цели](./screenshots/patch_api_targets_toggle.png)
-
-[Получение состояния сканирования](./screenshots/get_api_scan_state.png)
-
-[Уведомление о найдетом CVE](./screenshots/scanner_cve_alert.png)
-
-[Уведомление о старте программы](./screenshots/scanner_startup_notification.png)
-
-[Swagger](./screenshots/swagger.png)
-
-
+| Добавление целей | ![Добавление целей](./screenshots/post_api_targets.png) |
+| Получение списка целей | ![Список целей](./screenshots/get_api_targets.png) |
+| Удаление целей | ![Удаление целей](./screenshots/delete_api_targets.png) |
+| Переключение статуса цели | ![Переключение статуса](./screenshots/patch_api_targets_toggle.png) |
+| Состояние сканирования | ![Состояние сканирования](./screenshots/get_api_scan_state.png) |
+| CVE Alert | ![Уведомление о найденном CVE](./screenshots/scanner_cve_alert.png) |
+| Startup Notification | ![Уведомление о старте](./screenshots/scanner_startup_notification.png) |
+| Swagger UI | ![Swagger документация](./screenshots/swagger.png) |
 
 ## Technology Stack
 | Компонeнт           | Технология                              |
